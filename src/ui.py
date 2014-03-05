@@ -8,13 +8,15 @@ import sys
 rootPath = osp.dirname(osp.dirname(__file__))
 uiPath = osp.join(rootPath, 'ui')
 
-class Item(uic.loadUiType(osp.join(uiPath, 'item.ui'))):
+Form1, Base1 = uic.loadUiType(osp.join(uiPath, 'item.ui'))
+class Item(Form1, Base1):
 
     def __init__(self, parent=None):
         super(Item, self).__init__()
         self.setupUi(self)
 
-class Scroller(uic.loadUiType(osp.join(uiPath, 'scroller.ui'))):
+Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
+class Scroller(Form2, Base2):
     
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
