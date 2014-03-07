@@ -18,10 +18,10 @@ class Item(Form1, Base1):
         self.setupUi(self)
         
     def setTitle(self, title):
-        self.projectLabel.setText(title)
+        self.titleLabel.setText(title)
     
     def setName(self, name):
-        self.assetLabel.setText(name)
+        self.projectLabel.setText(name)
     
     def setDetail(self, detail):
         self.detailLabel.setText(detail)
@@ -37,6 +37,7 @@ class Scroller(Form2, Base2):
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
+        self.typeLabel.hide()
         
     def setTitle(self, title):
         self.titleLabel.setText(title)

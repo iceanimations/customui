@@ -1,1 +1,2 @@
-from src.ui import *
+import src.ui as ui
+reload(ui)
