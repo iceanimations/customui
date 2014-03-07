@@ -16,6 +16,7 @@ class Item(Form1, Base1):
     def __init__(self, parent=None):
         super(Item, self).__init__()
         self.setupUi(self)
+        self.thumbLabel.hide()
         
     def setTitle(self, title):
         self.titleLabel.setText(title)
@@ -33,6 +34,19 @@ class Item(Form1, Base1):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
+        
+    def enterEvent(self, event):
+        '''
+        handles when the mouse cursor enters the label
+        '''
+        self.setFrameShape(QFrame.WinPanel)
+        self.setFrameShadow(QFrame.Sunken)
+    
+    def leaveEvent(self, event):
+        '''
+        handles when the mouse cursor leaves the label
+        '''
+        self.setFrameStyle(QFrame.StyledPanel)
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
@@ -41,6 +55,8 @@ class Scroller(Form2, Base2):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
         self.typeLabel.hide()
+        self.scrollArea.verticalScrollBar().setFixedWidth(12)
+        self.scrollArea.horizontalScrollBar().setFixedHeight(12)
         
     def setTitle(self, title):
         self.titleLabel.setText(title)
