@@ -14,7 +14,7 @@
    <string>Frame</string>
   </property>
   <property name="frameShape">
-   <enum>QFrame::Panel</enum>
+   <enum>QFrame::StyledPanel</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Plain</enum>
@@ -86,14 +86,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="projectLabel">
+        <widget class="QLabel" name="assetLabel">
          <property name="text">
-          <string>project</string>
+          <string>Asset</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="projectLabel">
+         <property name="text">
+          <string>Project</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

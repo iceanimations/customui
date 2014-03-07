@@ -20,7 +20,10 @@ class Item(Form1, Base1):
     def setTitle(self, title):
         self.titleLabel.setText(title)
     
-    def setName(self, name):
+    def setAssetName(self, name):
+        self.assetLabel.setText(name)
+        
+    def setProjectName(self, name):
         self.projectLabel.setText(name)
     
     def setDetail(self, detail):
