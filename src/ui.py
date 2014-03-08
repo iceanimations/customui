@@ -9,6 +9,7 @@ import sys
 
 rootPath = osp.dirname(osp.dirname(__file__))
 uiPath = osp.join(rootPath, 'ui')
+iconPath = osp.join(rootPath, 'icons')
 
 Form1, Base1 = uic.loadUiType(osp.join(uiPath, 'item.ui'))
 class Item(Form1, Base1):
@@ -16,7 +17,9 @@ class Item(Form1, Base1):
     def __init__(self, parent=None):
         super(Item, self).__init__()
         self.setupUi(self)
-        self.thumbLabel.hide()
+        pix = QPixmap(100, 100)
+        pix.load(osp.join(iconPath, 'no_preview.png'))
+        self.thumbLabel.setPixmap(pix)
         
     def setTitle(self, title):
         self.titleLabel.setText(title)
