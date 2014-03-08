@@ -57,15 +57,11 @@ class Scroller(Form2, Base2):
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
-        self.typeLabel.hide()
         self.scrollArea.verticalScrollBar().setFixedWidth(12)
         self.scrollArea.horizontalScrollBar().setFixedHeight(12)
         
     def setTitle(self, title):
         self.titleLabel.setText(title)
-        
-    def setType(self, typ):
-        self.typeLabel.setText(typ)
         
     def addItem(self, item):
         self.itemLayout.addWidget(item)
