@@ -45,6 +45,8 @@ class Item(Form1, Base1):
         self.thumbLabel.setPixmap(pix)
         
     def title(self):
+        if self.ttl == 'No Title':
+            return ''
         return self.ttl
     
     def asset(self):
