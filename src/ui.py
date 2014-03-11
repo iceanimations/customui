@@ -105,7 +105,7 @@ class Scroller(Form2, Base2):
         result = []
         for item in self.itemsList:
             target = [item.title(), item.project(), item.asset()]
-            tar = "".join(target).lower()
+            tar = " ".join(target).lower()
             if not sources or any([True if src.lower() in tar 
                                    else False for src in sources]):
                 item.show()
