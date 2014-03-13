@@ -95,6 +95,11 @@ class Scroller(Form2, Base2):
         self.itemLayout.addWidget(item)
         self.itemsList.append(item)
         
+    def removeItems(self, items):
+        for item in items:
+            item.deleteLater()
+            self.itemsList.remove(item)
+        
     def items(self):
         return self.itemsList
         
