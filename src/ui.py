@@ -1,6 +1,6 @@
 from uiContainer import uic
 from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import *
 
 import os.path as osp
 import sys
@@ -95,6 +95,18 @@ class Scroller(Form2, Base2):
         self.itemLayout.addWidget(item)
         self.itemsList.append(item)
         
+    def removeItemsON(self, items):
+        removed = []
+        for item in self.itemsList:
+            for itm in items:
+                if str(item.objectName()) == itm:
+                    item.deleteLater()
+                    removed.append(item)
+                    break
+        for rmd in removed:
+            self.itemsList.remove(rmd)
+        return removed
+        
     def removeItems(self, items):
         for item in items:
             item.deleteLater()
@@ -123,3 +135,9 @@ class Explorer(Form3, Base3):
         super(Explorer, self).__init__(parent)
         self.setupUi(self)
         
+        self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
+        
+        self.refreshButton.clicked.connect(self.updateWindow)
+        
+    def updateWindow(self):
+        pass
