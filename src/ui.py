@@ -115,3 +115,11 @@ class Scroller(Form2, Base2):
             else: item.hide()
     def clearItems(self):
         self.itemsList[:] = []
+        
+Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
+class Explorer(Form3, Base3):
+    
+    def __init__(self, parent=None):
+        super(Explorer, self).__init__(parent)
+        self.setupUi(self)
+        
