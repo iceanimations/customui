@@ -116,7 +116,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="assetLabel">
+        <widget class="QLabel" name="subTitleLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -124,7 +124,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Asset</string>
+          <string>Subtitle</string>
          </property>
         </widget>
        </item>

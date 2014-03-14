@@ -26,13 +26,13 @@ class Item(Form1, Base1):
         self.ttl = title
         self.titleLabel.setText(title)
     
-    def setAssetName(self, name):
+    def setSubTitle(self, name):
         self.ast = name
-        self.assetLabel.setText(name)
+        self.subTitleLabel.setText(name)
         
-    def setProjectName(self, name):
+    def setThirdTitle(self, name):
         self.proj = name
-        self.projectLabel.setText(name)
+        self.thirdTitleLabel.setText(name)
     
     def setDetail(self, detail):
         self.detailLabel.setText(detail)
@@ -47,10 +47,10 @@ class Item(Form1, Base1):
             return ''
         return self.ttl
     
-    def asset(self):
+    def subTitle(self):
         return self.ast
     
-    def project(self):
+    def thirdTitle(self):
         return self.proj
         
     def enterEvent(self, event):
