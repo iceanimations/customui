@@ -1,7 +1,8 @@
 from uiContainer import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-
+import util
+reload(util)
 import os.path as osp
 import sys
 
@@ -135,9 +136,97 @@ class Explorer(Form3, Base3):
         super(Explorer, self).__init__(parent)
         self.setupUi(self)
         
+        self.currentContext = None
+        self.currentFile = None
+        self.filesBox = None
+        
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
         
+        self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
         
+    def showFiles(self, context):
+        # highlight the context
+        if self.currentContext:
+            self.currentContext.setStyleSheet("background-color: None")
+        self.currentContext = context
+        self.currentContext.setStyleSheet("background-color: #666666")
+        
+        # get the files
+        parts = str(self.currentContext.objectName()).split('>')
+        context = parts[0]; task = parts[1]
+        files = util.get_snapshots(context, task)
+        
+        # remove the showed files
+        if self.filesBox:
+            for fl in self.filesBox.items():
+                fl.deleteLater()
+            self.filesBox.clearItems()
+            self.currentFile = None
+        
+        if files:
+        
+            # create the scroller
+            if not self.filesBox:
+                self.filesBox = self.createScroller("Files")
+                
+            # add the latest file to scroller
+            for k in files:
+                values=files[k]
+                if values['latest']:
+                    item = self.createItem(values['filename'],
+                                           '', '',
+                                           util.get_sobject_description(k))
+                    self.filesBox.addItem(item)
+                    item.setObjectName(k)
+                    item.setToolTip(values['filename'])
+                    files.pop(k)
+                    break
+                
+            temp = {}
+            for ke in files:
+                temp[ke] = files[ke]['version']
+                
+            # show the new files
+            for key in sorted(temp, key=temp.get, reverse=True):
+                value = files[key]
+                item = self.createItem(value['filename'],
+                                       '', '',
+                                       util.get_sobject_description(key))
+                self.filesBox.addItem(item)
+                item.setObjectName(key)
+                item.setToolTip(value['filename'])
+            
+            # bind click event
+            map(lambda widget: self.bindClickEvent(widget, self.selectFile), self.filesBox.items())
+                
+    def selectFile(self, fil):
+        if self.currentFile:
+            self.currentFile.setStyleSheet("background-color: None")
+        self.currentFile = fil
+        self.currentFile.setStyleSheet("background-color: #666666")
+        
+    def createScroller(self, title):
+        scroller = Scroller(self)
+        scroller.setTitle(title)
+        self.scrollerLayout.addWidget(scroller)
+        return scroller
+    
+    def createItem(self, title, subTitle, thirdTitle, detail):
+        if not title:
+            title = 'No title'
+        item = Item(self)
+        item.setTitle(title)
+        item.setSubTitle(subTitle)
+        item.setThirdTitle(thirdTitle)
+        item.setDetail(detail)
+        return item
+    
+    def bindClickEvent(self, widget, function):
+        widget.mouseReleaseEvent = lambda event: function(widget)
+    
     def updateWindow(self):
         pass
+    
+    def closeEvent(self, event):
+        self.deleteLater()
