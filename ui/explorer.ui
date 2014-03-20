@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>871</width>
-    <height>506</height>
+    <width>903</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Tasks</string>
+   <string/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -77,6 +77,28 @@
         <property name="text">
          <string/>
         </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="projectsBox">
+        <item>
+         <property name="text">
+          <string>--Select Project--</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
@@ -176,7 +198,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>871</width>
+     <width>903</width>
      <height>22</height>
     </rect>
    </property>

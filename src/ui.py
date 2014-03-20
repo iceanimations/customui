@@ -127,6 +127,8 @@ class Scroller(Form2, Base2):
                 item.show()
             else: item.hide()
     def clearItems(self):
+        for item in self.itemsList:
+            item.deleteLater()
         self.itemsList[:] = []
         
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
@@ -139,28 +141,39 @@ class Explorer(Form3, Base3):
         self.currentContext = None
         self.currentFile = None
         self.filesBox = None
+        self.snapshots = None # used in assetsExplorer
         
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
         
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
         
-    def showFiles(self, context):
+    def showFiles(self, context, files = None):
         # highlight the context
         if self.currentContext:
             self.currentContext.setStyleSheet("background-color: None")
         self.currentContext = context
         self.currentContext.setStyleSheet("background-color: #666666")
         
-        # get the files
         parts = str(self.currentContext.objectName()).split('>')
-        context = parts[0]; task = parts[1]
-        files = util.get_snapshots(context, task)
+        if files is None:
+            # get the files
+            contx = parts[0]; task = parts[1]
+            files = util.get_snapshots(contx, task)
+        else:
+            newFiles = {}
+            pro = parts[0]; contx = parts[1]
+            for snap in files:
+                if snap['process'] == pro and snap['context'] == contx:
+                    newFiles[snap['__search_key__']] = {'filename': osp.basename(util.filename_from_snap(snap)),
+                                                                                 'latest': snap['is_latest'],
+                                                                                 'version': snap['version'],
+                                                                                 'description': snap['description']}
+            files = newFiles
+
         
         # remove the showed files
         if self.filesBox:
-            for fl in self.filesBox.items():
-                fl.deleteLater()
             self.filesBox.clearItems()
             self.currentFile = None
         
@@ -176,7 +189,7 @@ class Explorer(Form3, Base3):
                 if values['latest']:
                     item = self.createItem(values['filename'],
                                            '', '',
-                                           util.get_sobject_description(k))
+                                           values['description'])
                     self.filesBox.addItem(item)
                     item.setObjectName(k)
                     item.setToolTip(values['filename'])
@@ -192,7 +205,7 @@ class Explorer(Form3, Base3):
                 value = files[key]
                 item = self.createItem(value['filename'],
                                        '', '',
-                                       util.get_sobject_description(key))
+                                       value['description'])
                 self.filesBox.addItem(item)
                 item.setObjectName(key)
                 item.setToolTip(value['filename'])
@@ -220,6 +233,7 @@ class Explorer(Form3, Base3):
         item.setSubTitle(subTitle)
         item.setThirdTitle(thirdTitle)
         item.setDetail(detail)
+        item.setToolTip(title)
         return item
     
     def bindClickEvent(self, widget, function):
@@ -228,5 +242,22 @@ class Explorer(Form3, Base3):
     def updateWindow(self):
         pass
     
+    def updateFilesBox(self):
+        if self.currentContext:
+            self.showFiles(self.currentContext)
+            self.reselectFile()
+                    
+    def reselectFile(self):
+        if self.currentFile:
+            flag = False
+            for fl in self.filesBox.items():
+                if fl.objectName() == self.currentFile.objectName():
+                    self.currentFile = fl
+                    self.selectFile(fl)
+                    flag = True
+                    break
+            if not flag:
+                self.currentFile = None
+        
     def closeEvent(self, event):
         self.deleteLater()
