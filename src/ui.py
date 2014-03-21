@@ -245,19 +245,6 @@ class Explorer(Form3, Base3):
     def updateFilesBox(self):
         if self.currentContext:
             self.showFiles(self.currentContext)
-            self.reselectFile()
-                    
-    def reselectFile(self):
-        if self.currentFile:
-            flag = False
-            for fl in self.filesBox.items():
-                if fl.objectName() == self.currentFile.objectName():
-                    self.currentFile = fl
-                    self.selectFile(fl)
-                    flag = True
-                    break
-            if not flag:
-                self.currentFile = None
         
     def closeEvent(self, event):
         self.deleteLater()
