@@ -142,6 +142,7 @@ class Explorer(Form3, Base3):
         self.currentFile = None
         self.filesBox = None
         self.snapshots = None # used in assetsExplorer
+        self.checkinputDialog = None
         
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
         
@@ -212,6 +213,10 @@ class Explorer(Form3, Base3):
             
             # bind click event
             map(lambda widget: self.bindClickEvent(widget, self.selectFile), self.filesBox.items())
+            
+        # handle child windows
+        if self.checkinputDialog:
+            self.checkinputDialog.setContext(self.currentContext.title())
                 
     def selectFile(self, fil):
         if self.currentFile:
