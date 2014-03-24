@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>175</height>
+    <width>326</width>
+    <height>191</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>300</width>
+    <width>0</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>300</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -67,7 +67,7 @@
       <widget class="QLineEdit" name="searchBox">
        <property name="minimumSize">
         <size>
-         <width>180</width>
+         <width>0</width>
          <height>0</height>
         </size>
        </property>
@@ -105,8 +105,8 @@ padding-bottom: 1px;</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>278</width>
-        <height>125</height>
+        <width>304</width>
+        <height>141</height>
        </rect>
       </property>
       <property name="sizePolicy">
