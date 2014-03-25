@@ -140,7 +140,6 @@ class Explorer(Form3, Base3):
         
         self.currentContext = None
         self.currentFile = None
-        self.filesBox = None
         self.snapshots = None # used in assetsExplorer
         self.checkinputDialog = None
         
@@ -148,6 +147,9 @@ class Explorer(Form3, Base3):
         
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
+        
+    def addFilesBox(self):
+        self.filesBox = self.createScroller('Files')
         
     def showFiles(self, context, files = None):
         # highlight the context
@@ -174,16 +176,9 @@ class Explorer(Form3, Base3):
 
         
         # remove the showed files
-        if self.filesBox:
-            self.filesBox.clearItems()
-            self.currentFile = None
+        self.filesBox.clearItems()
         
         if files:
-        
-            # create the scroller
-            if not self.filesBox:
-                self.filesBox = self.createScroller("Files")
-                
             # add the latest file to scroller
             for k in files:
                 values=files[k]
