@@ -177,6 +177,7 @@ class Explorer(Form3, Base3):
         
         # remove the showed files
         self.filesBox.clearItems()
+        self.currentFile = None
         
         if files:
             # add the latest file to scroller
