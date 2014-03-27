@@ -185,7 +185,7 @@ class Explorer(Form3, Base3):
                 values=files[k]
                 if values['latest']:
                     item = self.createItem(values['filename'],
-                                           '', '',
+                                           str(util.date_str_to_datetime(values['timestamp'])), '',
                                            values['description'])
                     self.filesBox.addItem(item)
                     item.setObjectName(k)
@@ -201,7 +201,7 @@ class Explorer(Form3, Base3):
             for key in sorted(temp, key=temp.get, reverse=True):
                 value = files[key]
                 item = self.createItem(value['filename'],
-                                       '', '',
+                                       str(util.date_str_to_datetime(value['timestamp'])), '',
                                        value['description'])
                 self.filesBox.addItem(item)
                 item.setObjectName(key)
