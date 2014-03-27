@@ -169,9 +169,10 @@ class Explorer(Form3, Base3):
             for snap in files:
                 if snap['process'] == pro and snap['context'] == contx:
                     newFiles[snap['__search_key__']] = {'filename': osp.basename(util.filename_from_snap(snap)),
-                                                                                 'latest': snap['is_latest'],
-                                                                                 'version': snap['version'],
-                                                                                 'description': snap['description']}
+                                                        'latest': snap['is_latest'],
+                                                        'version': snap['version'],
+                                                        'description': snap['description'],
+                                                        'timestamp': snap['timestamp']}
             files = newFiles
 
         
