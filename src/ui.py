@@ -20,19 +20,19 @@ class Item(Form1, Base1):
         pix.load(osp.join(iconPath, 'no_preview.png'))
         self.thumbLabel.setPixmap(pix)
         self.ttl = ''
-        self.ast = ''
-        self.proj = ''
+        self.subTtl = ''
+        self.thirdTtl = ''
         
     def setTitle(self, title):
         self.ttl = title
         self.titleLabel.setText(title)
     
     def setSubTitle(self, name):
-        self.ast = name
+        self.subTtl = name
         self.subTitleLabel.setText(name)
         
     def setThirdTitle(self, name):
-        self.proj = name
+        self.thirdTtl = name
         self.thirdTitleLabel.setText(name)
     
     def setDetail(self, detail):
@@ -49,10 +49,20 @@ class Item(Form1, Base1):
         return self.ttl
     
     def subTitle(self):
-        return self.ast
+        return self.subTtl
     
     def thirdTitle(self):
-        return self.proj
+        return self.thirdTtl
+    
+    def addWidget(self, widget):
+        self.horizontalLayout.addWidget(widget)
+        self.widget = widget
+        
+    def setChecked(self, checked):
+        self.widget.setChecked(checked)
+        
+    def isChecked(self):
+        return self.widget.isChecked()
         
     def enterEvent(self, event):
         '''
