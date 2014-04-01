@@ -1,7 +1,7 @@
 from uiContainer import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import util
+import app.util as util
 reload(util)
 import os.path as osp
 import sys
