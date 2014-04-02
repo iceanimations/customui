@@ -157,6 +157,10 @@ class Explorer(Form3, Base3):
         
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
+        self.referenceButton.clicked.connect(self.addReference)
+        
+    def addReference(self):
+        pass
         
     def addFilesBox(self):
         self.filesBox = self.createScroller('Files')
