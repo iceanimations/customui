@@ -179,7 +179,7 @@ class Explorer(Form3, Base3):
             files = util.get_snapshots(contx, task)
         else:
             newFiles = {}
-            pro = parts[0]; contx = parts[1]
+            pro = parts[0]; contx = parts[0] if len(parts) == 1 else '/'.join(parts[1:])
             for snap in files:
                 if snap['process'] == pro and snap['context'] == contx:
                     newFiles[snap['__search_key__']] = {'filename': osp.basename(util.filename_from_snap(snap)),
