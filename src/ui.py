@@ -128,7 +128,6 @@ class Scroller(Form2, Base2):
         
     def searchItems(self, text):
         sources = str(text).split()
-        result = []
         for item in self.itemsList:
             target = [item.title(), item.thirdTitle(), item.subTitle()]
             tar = " ".join(target).lower()
@@ -227,7 +226,10 @@ class Explorer(Form3, Base3):
             
         # handle child windows
         if self.checkinputDialog:
-            self.checkinputDialog.setContext(self.currentContext.title())
+            context = self.currentContext.title()
+            if self.checkinputDialog.newContextButton.isChecked():
+                context = self.currentContext.title().split('/')[0] +'/'+ str(self.checkinputDialog.newContextBox.text())
+            self.checkinputDialog.setContext(context)
                 
     def selectFile(self, fil):
         if self.currentFile:
