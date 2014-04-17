@@ -1,8 +1,14 @@
-from uiContainer import uic
+try:
+    from uiContainer import uic
+except:
+    from PyQt4 import uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-import app.util as util
-reload(util)
+try:
+    # cui is imported in login, so put it under try
+    import app.util as util
+    reload(util)
+except: pass
 import os.path as osp
 import sys
 
@@ -266,3 +272,20 @@ class Explorer(Form3, Base3):
         
     def closeEvent(self, event):
         self.deleteLater()
+
+def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBox.Ok,
+       icon = None, ques = None, details = None):
+
+    if msg:
+        mBox = QMessageBox(parent)
+        mBox.setWindowTitle(title)
+        mBox.setText(msg)
+        if ques:
+            mBox.setInformativeText(ques)
+        if icon:
+            mBox.setIcon(icon)
+        if details:
+            mBox.setDetailedText(details)
+        mBox.setStandardButtons(btns)
+        buttonPressed = mBox.exec_()
+        return buttonPressed
