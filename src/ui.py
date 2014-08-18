@@ -28,48 +28,48 @@ class Item(Form1, Base1):
         self.ttl = ''
         self.subTtl = ''
         self.thirdTtl = ''
-        
+
     def setTitle(self, title):
         self.ttl = title
         self.titleLabel.setText(title)
-    
+
     def setSubTitle(self, name):
         self.subTtl = name
         self.subTitleLabel.setText(name)
-        
+
     def setThirdTitle(self, name):
         self.thirdTtl = name
         self.thirdTitleLabel.setText(name)
-    
+
     def setDetail(self, detail):
         self.detailLabel.setText(detail)
-        
+
     def setThumb(self, thumbPath):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
-        
+
     def title(self):
         if self.ttl == 'No Title':
             return ''
         return self.ttl
-    
+
     def subTitle(self):
         return self.subTtl
-    
+
     def thirdTitle(self):
         return self.thirdTtl
-    
+
     def addWidget(self, widget):
         self.horizontalLayout.addWidget(widget)
         self.widget = widget
-        
+
     def setChecked(self, checked):
         self.widget.setChecked(checked)
-        
+
     def isChecked(self):
         return self.widget.isChecked()
-        
+
     def enterEvent(self, event):
         '''
         handles when the mouse cursor enters the label
@@ -77,7 +77,7 @@ class Item(Form1, Base1):
         self.setFrameShape(QFrame.Panel)
         self.setFrameShadow(QFrame.Raised)
         self.setLineWidth(3)
-    
+
     def leaveEvent(self, event):
         '''
         handles when the mouse cursor leaves the label
@@ -87,31 +87,31 @@ class Item(Form1, Base1):
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
-    
+
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
-        
+
         self.itemsList = []
         self.searchBox.textChanged.connect(self.searchItems)
-        
+
         self.scrollArea.verticalScrollBar().setFixedWidth(12)
         self.scrollArea.horizontalScrollBar().setFixedHeight(12)
-        
+
         path = osp.join(iconPath, 'search.png').replace('\\', '/')
         style = ("padding-left: 15px; background-image: url(%s); "+
         "background-repeat: no-repeat; background-position: center left; "+
         "border-width: 1px; border-style: inset; border-color: #535353; "+
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
-        
+
     def setTitle(self, title):
         self.titleLabel.setText(title)
-        
+
     def addItem(self, item):
         self.itemLayout.addWidget(item)
         self.itemsList.append(item)
-        
+
     def removeItemsON(self, items):
         removed = []
         for item in self.itemsList:
@@ -123,21 +123,21 @@ class Scroller(Form2, Base2):
         for rmd in removed:
             self.itemsList.remove(rmd)
         return removed
-        
+
     def removeItems(self, items):
         for item in items:
             item.deleteLater()
             self.itemsList.remove(item)
-        
+
     def items(self):
         return self.itemsList
-        
+
     def searchItems(self, text):
         sources = str(text).split()
         for item in self.itemsList:
             target = [item.title(), item.thirdTitle(), item.subTitle()]
             tar = " ".join(target).lower()
-            if not sources or any([True if src.lower() in tar 
+            if not sources or any([True if src.lower() in tar
                                    else False for src in sources]):
                 item.show()
             else: item.hide()
@@ -145,10 +145,10 @@ class Scroller(Form2, Base2):
         for item in self.itemsList:
             item.deleteLater()
         self.itemsList[:] = []
-        
+
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
 class Explorer(Form3, Base3):
-    
+
     def __init__(self, parent=None, standalone=False):
         super(Explorer, self).__init__(parent)
         self.setupUi(self)
@@ -156,24 +156,24 @@ class Explorer(Form3, Base3):
         self.episodeBox.hide()
         self.sequenceBox.hide()
         self.statusBar().hide()
-        
+
         if standalone:
             self.openButton.hide()
             self.referenceButton.hide()
-            
+
         self.standalone = standalone
         self.currentContext = None
         self.currentFile = None
         self.snapshots = None # used in assetsExplorer
         self.checkinputDialog = None
         self.projects = {}
-        
+
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
-        
+
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
         self.referenceButton.clicked.connect(self.addReference)
-        
+
     def setProjectsBox(self):
         for project in util.get_all_projects():
             self.projects[project['title']] = project['code']
@@ -181,24 +181,24 @@ class Explorer(Form3, Base3):
 
     def addReference(self):
         pass
-    
+
     def clearContextsProcesses(self):
         self.contextsBox.clearItems()
         self.currentContext = None
-        
+
         self.filesBox.clearItems()
         self.currentFile = None
-        
+
     def addFilesBox(self):
         self.filesBox = self.createScroller('Files')
-        
+
     def showFiles(self, context, files = None):
         # highlight the context
         if self.currentContext:
             self.currentContext.setStyleSheet("background-color: None")
         self.currentContext = context
         self.currentContext.setStyleSheet("background-color: #666666")
-        
+
         parts = str(self.currentContext.objectName()).split('>')
         if files is None:
             # get the files
@@ -216,11 +216,11 @@ class Explorer(Form3, Base3):
                                                         'timestamp': snap['timestamp']}
             files = newFiles
 
-        
+
         # remove the showed files
         self.filesBox.clearItems()
         self.currentFile = None
-        
+
         if files:
             # add the latest file to scroller
             for k in files:
@@ -234,11 +234,11 @@ class Explorer(Form3, Base3):
                     item.setToolTip(values['filename'])
                     files.pop(k)
                     break
-                
+
             temp = {}
             for ke in files:
                 temp[ke] = files[ke]['version']
-                
+
             # show the new files
             for key in sorted(temp, key=temp.get, reverse=True):
                 value = files[key]
@@ -248,29 +248,30 @@ class Explorer(Form3, Base3):
                 self.filesBox.addItem(item)
                 item.setObjectName(key)
                 item.setToolTip(value['filename'])
-            
+
             # bind click event
             map(lambda widget: self.bindClickEvent(widget, self.selectFile), self.filesBox.items())
-            
+
         # handle child windows
         if self.checkinputDialog:
             context = self.currentContext.title()
             if self.checkinputDialog.newContextButton.isChecked():
-                context = self.currentContext.title().split('/')[0] +'/'+ str(self.checkinputDialog.newContextBox.text())
+                context = (self.currentContext.title().split('/')[0] +'/' +
+                           str(self.checkinputDialog.newContextBox.text()))
             self.checkinputDialog.setContext(context)
-                
+
     def selectFile(self, fil):
         if self.currentFile:
             self.currentFile.setStyleSheet("background-color: None")
         self.currentFile = fil
         self.currentFile.setStyleSheet("background-color: #666666")
-        
+
     def createScroller(self, title):
         scroller = Scroller(self)
         scroller.setTitle(title)
         self.scrollerLayout.addWidget(scroller)
         return scroller
-    
+
     def createItem(self, title, subTitle, thirdTitle, detail):
         if not title:
             title = 'No title'
@@ -281,7 +282,7 @@ class Explorer(Form3, Base3):
         item.setDetail(detail)
         item.setToolTip(title)
         return item
-    
+
 
     def checkout(self, r = False):
         if self.currentFile:
@@ -289,20 +290,20 @@ class Explorer(Form3, Base3):
 
     def bindClickEvent(self, widget, function):
         widget.mouseReleaseEvent = lambda event: function(widget)
-        
+
     def bindClickEventForFiles(self, widget, func, args):
         widget.mouseReleaseEvent = lambda event: func(widget, args)
-    
+
     def updateWindow(self):
         pass
-    
+
     def updateFilesBox(self):
         if self.currentContext:
             self.showFiles(self.currentContext)
-    
+
     def hideEvent(self, event):
         self.close()
-        
+
     def closeEvent(self, event):
         self.deleteLater()
 
