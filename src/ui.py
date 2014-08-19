@@ -149,14 +149,24 @@ class Scroller(Form2, Base2):
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
 class Explorer(Form3, Base3):
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, standalone=False):
         super(Explorer, self).__init__(parent)
         self.setupUi(self)
+        self.projectsBox.hide()
+        self.episodeBox.hide()
+        self.sequenceBox.hide()
+        self.statusBar().hide()
         
+        if standalone:
+            self.openButton.hide()
+            self.referenceButton.hide()
+            
+        self.standalone = standalone
         self.currentContext = None
         self.currentFile = None
         self.snapshots = None # used in assetsExplorer
         self.checkinputDialog = None
+        self.projects = {}
         
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
         
@@ -164,8 +174,20 @@ class Explorer(Form3, Base3):
         self.refreshButton.clicked.connect(self.updateWindow)
         self.referenceButton.clicked.connect(self.addReference)
         
+    def setProjectsBox(self):
+        for project in util.get_all_projects():
+            self.projects[project['title']] = project['code']
+            self.projectsBox.addItem(project['title'])
+
     def addReference(self):
         pass
+    
+    def clearContextsProcesses(self):
+        self.contextsBox.clearItems()
+        self.currentContext = None
+        
+        self.filesBox.clearItems()
+        self.currentFile = None
         
     def addFilesBox(self):
         self.filesBox = self.createScroller('Files')
@@ -260,8 +282,16 @@ class Explorer(Form3, Base3):
         item.setToolTip(title)
         return item
     
+
+    def checkout(self, r = False):
+        if self.currentFile:
+            backend.checkout(str(self.currentFile.objectName()), r = r)
+
     def bindClickEvent(self, widget, function):
         widget.mouseReleaseEvent = lambda event: function(widget)
+        
+    def bindClickEventForFiles(self, widget, func, args):
+        widget.mouseReleaseEvent = lambda event: func(widget, args)
     
     def updateWindow(self):
         pass
