@@ -164,7 +164,7 @@ class Explorer(Form3, Base3):
         self.standalone = standalone
         self.currentContext = None
         self.currentFile = None
-        self.snapshots = None # used in assetsExplorer
+        self.snapshots = None
         self.checkinputDialog = None
         self.projects = {}
         
@@ -281,11 +281,6 @@ class Explorer(Form3, Base3):
         item.setDetail(detail)
         item.setToolTip(title)
         return item
-    
-
-    def checkout(self, r = False):
-        if self.currentFile:
-            backend.checkout(str(self.currentFile.objectName()), r = r)
 
     def bindClickEvent(self, widget, function):
         widget.mouseReleaseEvent = lambda event: function(widget)
