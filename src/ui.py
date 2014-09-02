@@ -94,6 +94,7 @@ class Scroller(Form2, Base2):
 
         self.itemsList = []
         self.searchBox.textChanged.connect(self.searchItems)
+        self.searchBox.returnPressed.connect(lambda: self.searchItems(self.searchBox.text()))
 
         self.scrollArea.verticalScrollBar().setFixedWidth(12)
         self.scrollArea.horizontalScrollBar().setFixedHeight(12)
