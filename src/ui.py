@@ -162,10 +162,7 @@ class Explorer(Form3, Base3):
         if standalone:
             self.openButton.hide()
             self.referenceButton.hide()
-
-        if standalone:
-            self.openButton.hide()
-            self.referenceButton.hide()
+            self.setWindowIcon(QIcon(osp.join(iconPath, 'tactic.png')))
             
         self.standalone = standalone
         self.currentContext = None
@@ -309,9 +306,6 @@ class Explorer(Form3, Base3):
     def updateFilesBox(self):
         if self.currentContext:
             self.showFiles(self.currentContext)
-
-    def hideEvent(self, event):
-        self.close()
 
     def closeEvent(self, event):
         self.deleteLater()
