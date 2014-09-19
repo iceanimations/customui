@@ -289,11 +289,6 @@ class Explorer(Form3, Base3):
         item.setToolTip(title)
         return item
 
-
-    def checkout(self, r = False):
-        if self.currentFile:
-            backend.checkout(str(self.currentFile.objectName()), r = r)
-
     def bindClickEvent(self, widget, function):
         widget.mouseReleaseEvent = lambda event: function(widget)
 
