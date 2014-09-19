@@ -97,6 +97,9 @@ padding-bottom: 1px;</string>
        <height>16777215</height>
       </size>
      </property>
+     <property name="verticalScrollBarPolicy">
+      <enum>Qt::ScrollBarAsNeeded</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -105,8 +108,8 @@ padding-bottom: 1px;</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>329</width>
-        <height>268</height>
+        <width>333</width>
+        <height>272</height>
        </rect>
       </property>
       <property name="sizePolicy">

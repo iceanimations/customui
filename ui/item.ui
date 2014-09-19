@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>355</width>
-    <height>101</height>
+    <height>103</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -79,10 +79,10 @@
         </size>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::StyledPanel</enum>
        </property>
        <property name="text">
-        <string>No Preview</string>
+        <string>Loading...</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>

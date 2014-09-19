@@ -11,6 +11,8 @@ try:
 except: pass
 import os.path as osp
 import sys
+import app.util as util
+reload(util)
 
 rootPath = osp.dirname(osp.dirname(__file__))
 uiPath = osp.join(rootPath, 'ui')
@@ -22,9 +24,7 @@ class Item(Form1, Base1):
     def __init__(self, parent=None):
         super(Item, self).__init__()
         self.setupUi(self)
-        pix = QPixmap(100, 100)
-        pix.load(osp.join(iconPath, 'no_preview.png'))
-        self.thumbLabel.setPixmap(pix)
+        self.thumb_added = False
         self.ttl = ''
         self.subTtl = ''
         self.thirdTtl = ''
@@ -45,9 +45,13 @@ class Item(Form1, Base1):
         self.detailLabel.setText(detail)
 
     def setThumb(self, thumbPath):
+        self.thumb_added = True
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
+        
+    def thumbAdded(self):
+        return self.thumb_added
 
     def title(self):
         if self.ttl == 'No Title':
@@ -87,11 +91,9 @@ class Item(Form1, Base1):
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
-
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
-
         self.itemsList = []
         self.searchBox.textChanged.connect(self.searchItems)
         self.searchBox.returnPressed.connect(lambda: self.searchItems(self.searchBox.text()))
@@ -105,6 +107,22 @@ class Scroller(Form2, Base2):
         "border-width: 1px; border-style: inset; border-color: #535353; "+
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
+
+    def scrolled(self, value):
+        for item in self.itemsList:
+            if item.visibleRegion().isEmpty():
+                pass
+            else:
+                if not item.thumbAdded():
+                    try:
+                        path = util.get_sobject_icon(str(item.objectName()))
+                        if not path:
+                            path = osp.join(iconPath, 'no_preview.png')
+                    except:
+                        path = osp.join(iconPath, 'no_preview.png')
+                    item.setThumb(path)
+                    item.repaint()
+        qApp.processEvents()
 
     def setTitle(self, title):
         self.titleLabel.setText(title)
@@ -143,6 +161,7 @@ class Scroller(Form2, Base2):
                                    else False for src in sources]):
                 item.show()
             else: item.hide()
+
     def clearItems(self):
         for item in self.itemsList:
             item.deleteLater()
@@ -163,7 +182,7 @@ class Explorer(Form3, Base3):
             self.openButton.hide()
             self.referenceButton.hide()
             self.setWindowIcon(QIcon(osp.join(iconPath, 'tactic.png')))
-            
+
         self.standalone = standalone
         self.currentContext = None
         self.currentFile = None
@@ -301,9 +320,6 @@ class Explorer(Form3, Base3):
     def updateFilesBox(self):
         if self.currentContext:
             self.showFiles(self.currentContext)
-
-    def closeEvent(self, event):
-        self.deleteLater()
 
 def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBox.Ok,
        icon = None, ques = None, details = None):
