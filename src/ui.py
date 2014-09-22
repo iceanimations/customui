@@ -10,7 +10,6 @@ try:
     reload(util)
 except: pass
 import os.path as osp
-import sys
 import app.util as util
 reload(util)
 
@@ -49,7 +48,7 @@ class Item(Form1, Base1):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
-        
+
     def thumbAdded(self):
         return self.thumb_added
 
@@ -89,6 +88,23 @@ class Item(Form1, Base1):
         self.setFrameStyle(QFrame.StyledPanel)
         self.setLineWidth(1)
 
+    def paintEvent(self, event):
+        if not self.thumbAdded():
+            path = util.get_icon(str(self.objectName()))
+            if not path:
+                path = osp.join(iconPath, 'no_preview.png')
+            self.setThumb(path)
+        super(Item, self).paintEvent(event)
+
+    def showEvent2(self, event):
+        if self.visibleRegion().isEmpty():
+            return
+        path = util.get_icon(str(self.objectName()))
+        if not path:
+            path = osp.join(iconPath, 'no_preview.png')
+        self.setThumb(path)
+
+
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
     def __init__(self, parent=None):
@@ -110,15 +126,10 @@ class Scroller(Form2, Base2):
 
     def scrolled(self, value):
         for item in self.itemsList:
-            if item.visibleRegion().isEmpty():
-                pass
-            else:
+            if not item.visibleRegion().isEmpty():
                 if not item.thumbAdded():
-                    try:
-                        path = util.get_sobject_icon(str(item.objectName()))
-                        if not path:
-                            path = osp.join(iconPath, 'no_preview.png')
-                    except:
+                    path = util.get_icon(str(item.objectName()))
+                    if not path:
                         path = osp.join(iconPath, 'no_preview.png')
                     item.setThumb(path)
                     item.repaint()
