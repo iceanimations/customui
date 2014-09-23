@@ -96,14 +96,6 @@ class Item(Form1, Base1):
             self.setThumb(path)
         super(Item, self).paintEvent(event)
 
-    def showEvent2(self, event):
-        if self.visibleRegion().isEmpty():
-            return
-        path = util.get_icon(str(self.objectName()))
-        if not path:
-            path = osp.join(iconPath, 'no_preview.png')
-        self.setThumb(path)
-
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
@@ -232,14 +224,24 @@ class Explorer(Form3, Base3):
         self.currentContext = context
         self.currentContext.setStyleSheet("background-color: #666666")
 
-        parts = str(self.currentContext.objectName()).split('>')
+        objectName = str(self.currentContext.objectName())
+        parts = objectName.split('>')
+
+        index = 0
+        # check if object name has sobject_key in it
+        if objectName.find('?') >= 0:
+            index = 1
+
         if files is None:
             # get the files
-            contx = parts[0]; task = parts[1]
+            contx = parts[index]; task = parts[index+1]
             files = util.get_snapshots(contx, task)
         else:
             newFiles = {}
-            pro = parts[0]; contx = parts[0] if len(parts) == 1 else '/'.join(parts[1:])
+            pro = parts[index]
+            contx = (parts[index] if len(parts) == index+1 else
+                    '/'.join(parts[(index+1):]))
+
             for snap in files:
                 if snap['process'] == pro and snap['context'] == contx:
                     try:
