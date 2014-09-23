@@ -90,6 +90,7 @@ class Item(Form1, Base1):
 
     def paintEvent(self, event):
         if not self.thumbAdded():
+            print str(self.objectName())
             path = util.get_icon(str(self.objectName()))
             if not path:
                 path = osp.join(iconPath, 'no_preview.png')
@@ -234,7 +235,7 @@ class Explorer(Form3, Base3):
 
         if files is None:
             # get the files
-            contx = parts[index]; task = parts[index+1]
+            contx = parts[index+1]; task = parts[index]
             files = util.get_snapshots(contx, task)
         else:
             newFiles = {}
