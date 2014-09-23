@@ -230,14 +230,14 @@ class Explorer(Form3, Base3):
 
         index = 0
         # check if object name has sobject_key in it
-        if objectName.find('?') >= 0:
-            index = 1
 
         if files is None:
             # get the files
             contx = parts[index+1]; task = parts[index]
             files = util.get_snapshots(contx, task)
         else:
+            if objectName.find('?') >= 0:
+                index = 1
             newFiles = {}
             pro = parts[index]
             contx = (parts[index] if len(parts) == index+1 else
