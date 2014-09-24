@@ -10,7 +10,6 @@ try:
     reload(util)
 except: pass
 import os.path as osp
-import sys
 import app.util as util
 reload(util)
 
@@ -49,7 +48,7 @@ class Item(Form1, Base1):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
-        
+
     def thumbAdded(self):
         return self.thumb_added
 
@@ -89,6 +88,15 @@ class Item(Form1, Base1):
         self.setFrameStyle(QFrame.StyledPanel)
         self.setLineWidth(1)
 
+    def paintEvent(self, event):
+        if not self.thumbAdded():
+            path = util.get_icon(str(self.objectName()))
+            if not path:
+                path = osp.join(iconPath, 'no_preview.png')
+            self.setThumb(path)
+        super(Item, self).paintEvent(event)
+
+
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
     def __init__(self, parent=None):
@@ -110,15 +118,10 @@ class Scroller(Form2, Base2):
 
     def scrolled(self, value):
         for item in self.itemsList:
-            if item.visibleRegion().isEmpty():
-                pass
-            else:
+            if not item.visibleRegion().isEmpty():
                 if not item.thumbAdded():
-                    try:
-                        path = util.get_sobject_icon(str(item.objectName()))
-                        if not path:
-                            path = osp.join(iconPath, 'no_preview.png')
-                    except:
+                    path = util.get_icon(str(item.objectName()))
+                    if not path:
                         path = osp.join(iconPath, 'no_preview.png')
                     item.setThumb(path)
                     item.repaint()
@@ -221,14 +224,24 @@ class Explorer(Form3, Base3):
         self.currentContext = context
         self.currentContext.setStyleSheet("background-color: #666666")
 
-        parts = str(self.currentContext.objectName()).split('>')
+        objectName = str(self.currentContext.objectName())
+        parts = objectName.split('>')
+
+        index = 0
+        # check if object name has sobject_key in it
+
         if files is None:
             # get the files
-            contx = parts[0]; task = parts[1]
+            contx = parts[index+1]; task = parts[index]
             files = util.get_snapshots(contx, task)
         else:
+            if objectName.find('?') >= 0:
+                index = 1
             newFiles = {}
-            pro = parts[0]; contx = parts[0] if len(parts) == 1 else '/'.join(parts[1:])
+            pro = parts[index]
+            contx = (parts[index] if len(parts) == index+1 else
+                    '/'.join(parts[(index+1):]))
+
             for snap in files:
                 if snap['process'] == pro and snap['context'] == contx:
                     try:
