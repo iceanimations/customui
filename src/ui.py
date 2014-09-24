@@ -90,7 +90,6 @@ class Item(Form1, Base1):
 
     def paintEvent(self, event):
         if not self.thumbAdded():
-            print str(self.objectName())
             path = util.get_icon(str(self.objectName()))
             if not path:
                 path = osp.join(iconPath, 'no_preview.png')
