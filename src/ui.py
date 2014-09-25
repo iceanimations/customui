@@ -88,13 +88,12 @@ class Item(Form1, Base1):
         self.setFrameStyle(QFrame.StyledPanel)
         self.setLineWidth(1)
 
-    def paintEvent(self, event):
-        if not self.thumbAdded():
-            path = util.get_icon(str(self.objectName()))
-            if not path:
-                path = osp.join(iconPath, 'no_preview.png')
-            self.setThumb(path)
-        super(Item, self).paintEvent(event)
+#     def paintEvent(self, event):
+#         if not self.thumbAdded():
+#             path = util.get_icon(str(self.objectName()))
+#             if not path:
+#                 path = osp.join(iconPath, 'no_preview.png')
+#             self.setThumb(path)
 
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
