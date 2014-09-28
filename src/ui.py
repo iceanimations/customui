@@ -24,10 +24,15 @@ class Item(Form1, Base1):
         super(Item, self).__init__()
         self.setupUi(self)
         self.thumb_added = False
+        # TODO: fix the poor variable names
         self.ttl = ''
         self.subTtl = ''
         self.thirdTtl = ''
+        self.item_type = ''
 
+    def get_title(self):
+        return self.ttl
+    
     def setTitle(self, title):
         self.ttl = title
         self.titleLabel.setText(title)
@@ -48,6 +53,9 @@ class Item(Form1, Base1):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
+        
+    def setType(self, item_type):
+        self.item_type = item_type
 
     def thumbAdded(self):
         return self.thumb_added
@@ -98,6 +106,7 @@ class Item(Form1, Base1):
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
+
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
@@ -231,8 +240,10 @@ class Explorer(Form3, Base3):
 
         if files is None:
             # get the files
-            contx = parts[index+1]; task = parts[index]
+            contx = parts[index+1]
+            task = parts[index]
             files = util.get_snapshots(contx, task)
+            
         else:
             if objectName.find('?') >= 0:
                 index = 1
@@ -309,7 +320,8 @@ class Explorer(Form3, Base3):
         self.scrollerLayout.addWidget(scroller)
         return scroller
 
-    def createItem(self, title, subTitle, thirdTitle, detail):
+    def createItem(self, title, subTitle, thirdTitle, detail, item_type = ''):
+        
         if not title:
             title = 'No title'
         item = Item(self)
@@ -318,6 +330,7 @@ class Explorer(Form3, Base3):
         item.setThirdTitle(thirdTitle)
         item.setDetail(detail)
         item.setToolTip(title)
+        item.setType(item_type)
         return item
 
     def bindClickEvent(self, widget, function):
