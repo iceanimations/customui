@@ -109,7 +109,7 @@ padding-bottom: 1px;</string>
         <x>0</x>
         <y>0</y>
         <width>333</width>
-        <height>272</height>
+        <height>249</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -150,6 +150,16 @@ padding-bottom: 1px;</string>
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="versionsButton">
+     <property name="toolTip">
+      <string>Toggle between all versions and latest version</string>
+     </property>
+     <property name="text">
+      <string>Show all versions</string>
+     </property>
     </widget>
    </item>
   </layout>

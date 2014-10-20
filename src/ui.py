@@ -123,6 +123,12 @@ class Scroller(Form2, Base2):
         "border-width: 1px; border-style: inset; border-color: #535353; "+
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
+        
+        self.versionsButton.clicked.connect(self.toggleShowVersions)
+        
+    def toggleShowVersions(self):
+        for i in range(len(self.itemsList) - 1):
+            self.itemsList[i+1].setVisible(self.versionsButton.isChecked())
 
     def scrolled(self, value):
         for item in self.itemsList:
@@ -307,6 +313,7 @@ class Explorer(Form3, Base3):
                 context = (self.currentContext.title().split('/')[0] +'/' +
                            str(self.checkinputDialog.newContextBox.text()))
             self.checkinputDialog.setContext(context)
+        self.filesBox.toggleShowVersions()
 
     def selectFile(self, fil):
         if self.currentFile:
