@@ -353,11 +353,23 @@ class Explorer(Form3, Base3):
         if self.currentContext:
             self.showFiles(self.currentContext)
 
+class MessageBox(QMessageBox):
+    def __init__(self, parent=None):
+        super(MessageBox, self).__init__(parent)
+
+    def closeEvent(self, event):
+        print "close event"
+        self.deleteLater()
+
+    def hideEvent(self, event):
+        print "hide event"
+        self.deleteLater()
+
 def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBox.Ok,
        icon = None, ques = None, details = None):
 
     if msg:
-        mBox = QMessageBox(parent)
+        mBox = MessageBox(parent)
         mBox.setWindowTitle(title)
         mBox.setText(msg)
         if ques:
