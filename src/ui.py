@@ -360,10 +360,12 @@ class MessageBox(QMessageBox):
     def closeEvent(self, event):
         print "close event"
         self.deleteLater()
+        del self
 
     def hideEvent(self, event):
         print "hide event"
         self.deleteLater()
+        del self
 
 def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBox.Ok,
        icon = None, ques = None, details = None):
