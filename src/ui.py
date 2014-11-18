@@ -143,6 +143,9 @@ class Scroller(Form2, Base2):
 
     def setTitle(self, title):
         self.titleLabel.setText(title)
+        
+    def getTitle(self):
+        return str(self.titleLabel.text())
 
     def addItem(self, item):
         self.itemLayout.addWidget(item)
@@ -169,6 +172,9 @@ class Scroller(Form2, Base2):
         return self.itemsList
 
     def searchItems(self, text):
+        if self.getTitle() == 'Files':
+            self.versionsButton.setChecked(True)
+            
         sources = str(text).split()
         for item in self.itemsList:
             target = [item.title(), item.thirdTitle(), item.subTitle()]
