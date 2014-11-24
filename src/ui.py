@@ -12,6 +12,7 @@ except: pass
 import os.path as osp
 import app.util as util
 reload(util)
+import imaya as mi
 
 rootPath = osp.dirname(osp.dirname(__file__))
 uiPath = osp.join(rootPath, 'ui')
@@ -223,6 +224,14 @@ class Explorer(Form3, Base3):
         for project in util.get_all_projects():
             self.projects[project['title']] = project['code']
             self.projectsBox.addItem(project['title'])
+        project_name = mi.pc.optionVar(q='current_project_key')
+        if project_name:
+            for i in range(self.projectsBox.count()):
+                text = self.projectsBox.itemText(i)
+                if text == project_name:
+                    self.projectsBox.setCurrentIndex(i)
+                    break
+                
 
     def addReference(self):
         pass
