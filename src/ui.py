@@ -26,6 +26,7 @@ class _Label(object):
     kPAIR  = 0b00001000
     kSYNC  = 0b00010000
     kPUB   = 0b00100000
+    kLIVE  = 0b01000000
 
     @classmethod
     def everything(cls):
