@@ -2,8 +2,8 @@ try:
     from uiContainer import uic
 except:
     from PyQt4 import uic
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4.QtGui import QPixmap, QFrame, QIcon, QMessageBox, qApp, QLabel
+from PyQt4.QtCore import Qt
 try:
     # cui is imported in login, so put it under try
     import app.util as util
@@ -18,8 +18,54 @@ rootPath = osp.dirname(osp.dirname(__file__))
 uiPath = osp.join(rootPath, 'ui')
 iconPath = osp.join(rootPath, 'icons')
 
+class _Label(object):
+    __red_path__ = osp.join(iconPath, 'RED')
+    __green_path__ = osp.join(iconPath, 'GREEN')
+    kCURR  = 0b00000001
+    kNEW   = 0b00000010
+    kVLESS = 0b00000100
+    kPAIR  = 0b00001000
+    kSYNC  = 0b00010000
+    kPUB   = 0b00100000
+    kLIVE  = 0b01000000
+
+    @classmethod
+    def everything(cls):
+        mask = 0
+        for member in dir(cls):
+            if member.startswith('k'):
+                mask |= getattr(cls, member)
+        return mask
+
+    @classmethod
+    def current_versionless(cls):
+        return cls.kCURR | cls.kVLESS
+
+    @classmethod
+    def latest_versionless(cls):
+        return cls.kNEW | cls.kVLESS
+
+    @classmethod
+    def get_path(cls, mask, label_type=1):
+        label_type = bool(label_type)
+        for member in dir(cls):
+            if member.startswith('k'):
+                if getattr(cls, member) & mask:
+                    if label_type:
+                        path = cls.__green_path__
+                    else:
+                        path = cls.__red_path__
+                    return osp.join( path, member[1:]+'.png' )
+
+    @classmethod
+    def all_labels(cls):
+        return [getattr(cls, member) for member in dir(cls) if
+                member.startswith('k')]
+
+
 Form1, Base1 = uic.loadUiType(osp.join(uiPath, 'item.ui'))
 class Item(Form1, Base1):
+    kLabel = _Label
 
     def __init__(self, parent=None):
         super(Item, self).__init__()
@@ -30,10 +76,41 @@ class Item(Form1, Base1):
         self.subTtl = ''
         self.thirdTtl = ''
         self.item_type = ''
+        self.__labels = {}
+        self.__labelDisplayMask = 0
+        self.__labelStatusMask = 0
+
+    def __updateLabels(self):
+        for label in list(self.__labels.keys()):
+            widget = self.__labels.pop(label)
+            widget.deleteLater()
+
+        for label in self.kLabel.all_labels():
+            if label & self.__labelDisplayMask:
+                path = self.kLabel.get_path(label, label & self.__labelStatusMask)
+                widget = QLabel(self)
+                widget.setPixmap(QPixmap(path).scaled(15, 15,
+                    Qt.KeepAspectRatioByExpanding))
+                self.labelLayout.addWidget(widget)
+                self.__labels[label] = widget
+
+    def setLabelDisplay(self, val):
+        self.__labelDisplayMask = val
+        self.__updateLabels()
+    def getLabelDisplay(self):
+        return self.__labelDisplayMask
+    labelDisplay = property(getLabelDisplay, setLabelDisplay)
+
+    def setLabelStatus(self, val):
+        self.__labelStatusMask = val
+        self.__updateLabels()
+    def getLabelStatus(self):
+        return self.__labelStatusMask
+    labelStatus = property(getLabelStatus, setLabelStatus)
 
     def get_title(self):
         return self.ttl
-    
+
     def setTitle(self, title):
         self.ttl = title
         self.titleLabel.setText(title)
@@ -54,7 +131,7 @@ class Item(Form1, Base1):
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
-        
+
     def setType(self, item_type):
         self.item_type = item_type
 
@@ -75,6 +152,9 @@ class Item(Form1, Base1):
     def addWidget(self, widget):
         self.horizontalLayout.addWidget(widget)
         self.widget = widget
+
+    def addLabel(self):
+        pass
 
     def setChecked(self, checked):
         self.widget.setChecked(checked)
@@ -97,17 +177,9 @@ class Item(Form1, Base1):
         self.setFrameStyle(QFrame.StyledPanel)
         self.setLineWidth(1)
 
-#     def paintEvent(self, event):
-#         if not self.thumbAdded():
-#             path = util.get_icon(str(self.objectName()))
-#             if not path:
-#                 path = osp.join(iconPath, 'no_preview.png')
-#             self.setThumb(path)
-
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
-
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
@@ -124,9 +196,9 @@ class Scroller(Form2, Base2):
         "border-width: 1px; border-style: inset; border-color: #535353; "+
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
-        
+
         self.versionsButton.clicked.connect(self.toggleShowVersions)
-        
+
     def toggleShowVersions(self):
         for i in range(len(self.itemsList) - 1):
             self.itemsList[i+1].setVisible(self.versionsButton.isChecked())
@@ -191,9 +263,9 @@ class Scroller(Form2, Base2):
             item.deleteLater()
         self.itemsList[:] = []
 
+
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
 class Explorer(Form3, Base3):
-
     def __init__(self, parent=None, standalone=False):
         super(Explorer, self).__init__(parent)
         self.setupUi(self)
@@ -264,7 +336,7 @@ class Explorer(Form3, Base3):
             contx = parts[index+1]
             task = parts[index]
             files = util.get_snapshots(contx, task)
-            
+
         else:
             if objectName.find('?') >= 0:
                 index = 1
@@ -343,7 +415,7 @@ class Explorer(Form3, Base3):
         return scroller
 
     def createItem(self, title, subTitle, thirdTitle, detail, item_type = ''):
-        
+
         if not title:
             title = 'No title'
         item = Item(self)
@@ -368,6 +440,7 @@ class Explorer(Form3, Base3):
         if self.currentContext:
             self.showFiles(self.currentContext)
 
+
 class MessageBox(QMessageBox):
     def __init__(self, parent=None):
         super(MessageBox, self).__init__(parent)
@@ -381,6 +454,7 @@ class MessageBox(QMessageBox):
         print "hide event"
         self.deleteLater()
         del self
+
 
 def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBox.Ok,
        icon = None, ques = None, details = None):
@@ -398,3 +472,4 @@ def showMessage(parent, title = 'MessageBox', msg = 'Message', btns = QMessageBo
         mBox.setStandardButtons(btns)
         buttonPressed = mBox.exec_()
         return buttonPressed
+
