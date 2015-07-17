@@ -42,7 +42,7 @@ class _Label(object):
 
     @classmethod
     def latest_versionless(cls):
-        return cls.kCURR | cls.kVLESS
+        return cls.kNEW | cls.kVLESS
 
     @classmethod
     def get_path(cls, mask, label_type=1):
