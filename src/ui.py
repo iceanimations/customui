@@ -3,7 +3,7 @@ try:
 except:
     from PyQt4 import uic
 from PyQt4.QtGui import QPixmap, QFrame, QIcon, QMessageBox, qApp, QLabel
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QThread, pyqtSignal
 try:
     # cui is imported in login, so put it under try
     import app.util as util
@@ -62,10 +62,32 @@ class _Label(object):
         return [getattr(cls, member) for member in dir(cls) if
                 member.startswith('k')]
 
+class ThumbThread(QThread):
+    done = pyqtSignal(str)
+
+    def duplicateServer(self):
+        server = util.get_server()
+        self.server = util.USER.TacticServer(setup=False)
+        self.server.set_server(server.server_name)
+        self.server.set_project(server.get_project())
+
+    def __init__(self, parentItem):
+        super(ThumbThread, self).__init__(parent=parentItem)
+        self.parentItem = parentItem
+        self.done.connect(self.parentItem.setThumb)
+        self.duplicateServer()
+
+    def run(self):
+        self.server.set_ticket(self.server.get_ticket('talha.ahmed', 'lovethywife'))
+        icon = util.get_icon(self.parentItem.objectName(), server=self.server)
+        if icon:
+            self.done.emit(icon)
+
 
 Form1, Base1 = uic.loadUiType(osp.join(uiPath, 'item.ui'))
 class Item(Form1, Base1):
     kLabel = _Label
+    thumbFetched = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(Item, self).__init__()
@@ -79,6 +101,8 @@ class Item(Form1, Base1):
         self.__labels = {}
         self.__labelDisplayMask = 0
         self.__labelStatusMask = 0
+        self.thumbThread = None
+        self.thumbFetched.connect(self.setThumb)
 
     def __updateLabels(self):
         for label in list(self.__labels.keys()):
@@ -127,10 +151,11 @@ class Item(Form1, Base1):
         self.detailLabel.setText(detail)
 
     def setThumb(self, thumbPath):
-        self.thumb_added = True
+        print 'thumb:', self.objectName(), thumbPath
         pix = QPixmap(thumbPath)
         pix = pix.scaled(100, 100, Qt.KeepAspectRatio)
         self.thumbLabel.setPixmap(pix)
+        self.thumb_added = True
 
     def setType(self, item_type):
         self.item_type = item_type
@@ -177,9 +202,33 @@ class Item(Form1, Base1):
         self.setFrameStyle(QFrame.StyledPanel)
         self.setLineWidth(1)
 
+    def get_icon(self):
+        if not self.thumbThread:
+            print 'getting icon', self.objectName()
+            self.thumbThread = ThumbThread(self)
+            self.thumbThread.start()
+
+    def get_icon_async(self):
+        if not self.thumbAdded():
+            try:
+                print 'getting icon', self.objectName()
+                server = util.get_server()
+                newserver = util.USER.TacticServer(setup=False)
+                newserver.set_server(server.server_name)
+                newserver.set_project(server.get_project())
+                newserver.set_ticket(newserver.get_ticket('talha.ahmed', 'lovethywife'))
+                icon = util.get_icon(self.objectName(), server=newserver)
+                if icon:
+                    self.thumbFetched.emit(icon)
+            except Exception as e:
+                print e
+                raise e
+
+from multiprocessing.pool import ThreadPool
 
 Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
+
     def __init__(self, parent=None):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
@@ -196,8 +245,15 @@ class Scroller(Form2, Base2):
         "border-width: 1px; border-style: inset; border-color: #535353; "+
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
+        self.pool = None
+        self.reinitializeThreadPool()
 
         self.versionsButton.clicked.connect(self.toggleShowVersions)
+
+    def reinitializeThreadPool(self):
+        if self.pool:
+            self.pool.terminate()
+        self.pool = ThreadPool(processes=4)
 
     def toggleShowVersions(self):
         for i in range(len(self.itemsList) - 1):
@@ -207,11 +263,13 @@ class Scroller(Form2, Base2):
         for item in self.itemsList:
             if not item.visibleRegion().isEmpty():
                 if not item.thumbAdded():
-                    path = util.get_icon(str(item.objectName()))
-                    if not path:
-                        path = osp.join(iconPath, 'no_preview.png')
-                    item.setThumb(path)
-                    item.repaint()
+                    self.pool.apply_async(item.get_icon_async)
+                    #item.get_icon()
+                    #path = util.get_icon(str(item.objectName()))
+                    #if not path:
+                        #path = osp.join(iconPath, 'no_preview.png')
+                    #item.setThumb(path)
+                    #item.repaint()
         qApp.processEvents()
 
     def setTitle(self, title):
@@ -247,7 +305,6 @@ class Scroller(Form2, Base2):
     def searchItems(self, text):
         if self.getTitle() == 'Files':
             self.versionsButton.setChecked(True)
-            
         sources = str(text).split()
         for item in self.itemsList:
             target = [item.title(), item.thirdTitle(), item.subTitle()]
@@ -262,6 +319,7 @@ class Scroller(Form2, Base2):
         for item in self.itemsList:
             item.deleteLater()
         self.itemsList[:] = []
+        self.reinitializeThreadPool()
 
 
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
