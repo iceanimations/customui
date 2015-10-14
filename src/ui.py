@@ -2,13 +2,19 @@ from . import explorer
 
 reload(explorer)
 
-from .scroller import (Scroller, ContextScoller, SObjectScroller,
+from .scroller import (Scroller, ContextScroller, SObjectScroller,
         SnapshotScroller)
 from .explorer import Explorer
 from .item import Item, DeferredItemJob
 
 from PyQt4.QtGui import QMessageBox
 #from PyQt4.QtCore import Qt, pyqtSignal, QObject
+
+import os.path as osp
+
+rootPath = osp.dirname(osp.dirname(__file__))
+uiPath = osp.join(rootPath, 'ui')
+iconPath = osp.join(rootPath, 'icons')
 
 class MessageBox(QMessageBox):
     def __init__(self, parent=None):

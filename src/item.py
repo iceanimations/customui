@@ -156,7 +156,7 @@ class Item(Form1, Base1):
         self.__labelDisplayMask = 0
         self.__labelStatusMask = 0
         self.thumbThread = None
-        self.thumbFetched.connect(self.setThumb)
+        #self.thumbFetched.connect(self.setThumb)
         self.jobs = [GetIcon(self)]
 
     def __updateLabels(self):
@@ -278,7 +278,7 @@ class GetSnapshotInfo(DeferredItemJob):
             util_copy = util.create_new()
             snapshot = util_copy.get_snapshot_info(self._parent.objectName())
             self.publish_targets = util_copy.get_all_publish_targets(snapshot)
-            self.compatibles = util.get_cache_compatible_objects(snapshot)
+            self.compatibles = util_copy.get_cache_compatible_objects(snapshot)
             self.setSuccess()
             self.jobDone.emit()
         except Exception as e:
@@ -298,5 +298,5 @@ class GetSnapshotInfo(DeferredItemJob):
 class SnapshotItem(Item):
     def __init__(self, parent=None):
         super(SnapshotItem, self).__init__(parent=parent)
-        self.jobs.append(GetSnapshotInfo())
+        self.jobs.append(GetSnapshotInfo(self))
 FileItem = SnapshotItem

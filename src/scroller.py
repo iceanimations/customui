@@ -58,8 +58,6 @@ class Scroller(Form2, Base2):
                     if job.getStatus() == job.Status.kWaiting:
                         job.setBusy()
                         self.pool.apply_async(job.doAsync)
-                #if not item.thumbAdded():
-                    #self.pool.apply_async(item.get_icon_async)
         qApp.processEvents()
 
     def setTitle(self, title):
@@ -90,7 +88,7 @@ class Scroller(Form2, Base2):
         for _item in self.itemsList:
             for itm in items:
                 if str(item.objectName()) == itm:
-                    item.deleteLater()
+                    _item.deleteLater()
                     removed.append(item)
                     break
         for rmd in removed:
@@ -99,7 +97,7 @@ class Scroller(Form2, Base2):
 
     def removeItems(self, items):
         for _item in items:
-            item.deleteLater()
+            _item.deleteLater()
             self.itemsList.remove(item)
 
     def items(self):
@@ -110,17 +108,17 @@ class Scroller(Form2, Base2):
             self.versionsButton.setChecked(True)
         sources = str(text).split()
         for _item in self.itemsList:
-            target = [item.title(), item.thirdTitle(), item.subTitle()]
+            target = [_item.title(), _item.thirdTitle(), _item.subTitle()]
             target = filter(None, target)
             tar = " ".join(target).lower()
             if not sources or any([True if src.lower() in tar
                                    else False for src in sources]):
-                item.show()
-            else: item.hide()
+                _item.show()
+            else: _item.hide()
 
     def clearItems(self):
         for _item in self.itemsList:
-            item.deleteLater()
+            _item.deleteLater()
         self.itemsList[:] = []
         self.reinitializeThreadPool()
 
