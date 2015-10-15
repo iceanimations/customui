@@ -21,7 +21,7 @@ Form2, Base2 = uic.loadUiType(osp.join(uiPath, 'scroller.ui'))
 class Scroller(Form2, Base2):
     Item = item.Item()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, pool_size=4):
         super(Scroller, self).__init__(parent)
         self.setupUi(self)
         self.itemsList = []
@@ -38,6 +38,7 @@ class Scroller(Form2, Base2):
         "border-radius: 9px; padding-bottom: 1px;")%path
         self.searchBox.setStyleSheet(style)
         self.pool = None
+        self.pool_size = pool_size
         self.reinitializeThreadPool()
 
         self.versionsButton.clicked.connect(self.toggleShowVersions)
@@ -45,7 +46,7 @@ class Scroller(Form2, Base2):
     def reinitializeThreadPool(self):
         if self.pool:
             self.pool.terminate()
-        self.pool = ThreadPool(processes=4)
+        self.pool = ThreadPool(processes=self.pool_size)
 
     def toggleShowVersions(self):
         for i in range(len(self.itemsList) - 1):

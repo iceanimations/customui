@@ -282,6 +282,7 @@ class GetSnapshotInfo(DeferredItemJob):
             self.setSuccess()
             self.jobDone.emit()
         except Exception as e:
+            self.setFailure()
             import traceback
             traceback.print_exc()
             print type(e), e
