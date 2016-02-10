@@ -25,14 +25,15 @@ uiPath = osp.join(rootPath, 'ui')
 iconPath = osp.join(rootPath, 'icons')
 
 Form3, Base3 = uic.loadUiType(osp.join(uiPath, 'explorer.ui'))
-class Explorer(Form3, Base3):
+class BaseExplorer(Form3, Base3):
     def __init__(self, parent=None, standalone=False):
-        super(Explorer, self).__init__(parent)
+        super(BaseExplorer, self).__init__(parent)
         self.setupUi(self)
         self.projectsBox.hide()
         self.episodeBox.hide()
         self.sequenceBox.hide()
         self.statusBar().hide()
+        self.referenceButton.hide()
 
         if standalone:
             self.openButton.hide()
@@ -40,17 +41,12 @@ class Explorer(Form3, Base3):
             self.setWindowIcon(QIcon(osp.join(iconPath, 'tactic.png')))
 
         self.standalone = standalone
-        self.currentContext = None
-        self.currentFile = None
-        self.snapshots = None
-        self.checkinputDialog = None
         self.projects = {}
 
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
 
         self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
-        self.referenceButton.clicked.connect(self.addReference)
 
     def setProjectsBox(self):
         for project in util.get_all_projects():
@@ -63,6 +59,27 @@ class Explorer(Form3, Base3):
                 if text == project_name:
                     self.projectsBox.setCurrentIndex(i)
                     break
+    
+    def updateWindow(self):
+        pass
+    
+
+class Explorer(BaseExplorer):
+    def __init__(self, parent=None, standalone=False):
+        super(Explorer, self).__init__(parent, standalone)
+        self.referenceButton.show()
+
+        self.currentContext = None
+        self.currentFile = None
+        self.snapshots = None
+        self.checkinputDialog = None
+        self.projects = {}
+
+        self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
+
+        self.closeButton.clicked.connect(self.close)
+        self.refreshButton.clicked.connect(self.updateWindow)
+        self.referenceButton.clicked.connect(self.addReference)
 
     def addReference(self):
         pass
@@ -179,9 +196,6 @@ class Explorer(Form3, Base3):
 
     def bindClickEventForFiles(self, widget, func, args):
         widget.mouseReleaseEvent = lambda event: func(widget, args)
-
-    def updateWindow(self):
-        pass
 
     def updateFilesBox(self):
         if self.currentContext:
