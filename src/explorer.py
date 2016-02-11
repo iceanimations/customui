@@ -34,6 +34,8 @@ class BaseExplorer(Form3, Base3):
         self.sequenceBox.hide()
         self.statusBar().hide()
         self.referenceButton.hide()
+        self.proxyButton.hide()
+        self.gpuCacheButton.hide()
 
         if standalone:
             self.openButton.hide()
@@ -45,7 +47,6 @@ class BaseExplorer(Form3, Base3):
 
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
 
-        self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
 
     def setProjectsBox(self):
@@ -67,7 +68,6 @@ class BaseExplorer(Form3, Base3):
 class Explorer(BaseExplorer):
     def __init__(self, parent=None, standalone=False):
         super(Explorer, self).__init__(parent, standalone)
-        self.referenceButton.show()
 
         self.currentContext = None
         self.currentFile = None
@@ -77,9 +77,23 @@ class Explorer(BaseExplorer):
 
         self.refreshButton.setIcon(QIcon(osp.join(iconPath, 'refresh.png')))
 
-        self.closeButton.clicked.connect(self.close)
         self.refreshButton.clicked.connect(self.updateWindow)
         self.referenceButton.clicked.connect(self.addReference)
+        self.advanceButton.clicked.connect(self.handleAdvanceButton)
+        
+    def handleAdvanceButton(self):
+        if self.advanceButton.text().lower().startswith('<<'):
+            self.proxyButton.show()
+            self.gpuCacheButton.show()
+            self.referenceButton.show()
+            self.advanceButton.setText('Less >>')
+            self.advanceButton.setToolTip('Show Lesser options')
+        else:
+            self.proxyButton.hide()
+            self.gpuCacheButton.hide()
+            self.referenceButton.hide()
+            self.advanceButton.setText('<< More')
+            self.advanceButton.setToolTip('Show More options')
 
     def addReference(self):
         pass
