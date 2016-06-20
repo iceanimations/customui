@@ -6,6 +6,7 @@ except:
 import os.path as osp
 from PyQt4.QtGui import QPixmap, QLabel, QFrame
 from PyQt4.QtCore import Qt, QObject
+import PyQt4
 
 try:
     # cui is imported in login, so put it under try
