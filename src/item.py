@@ -5,7 +5,7 @@ except:
 
 import os.path as osp
 from PyQt4.QtGui import QPixmap, QLabel, QFrame
-from PyQt4.QtCore import Qt, pyqtSignal, QObject
+from PyQt4.QtCore import Qt, QObject
 
 try:
     # cui is imported in login, so put it under try
@@ -65,7 +65,7 @@ class _Label(object):
                 member.startswith('k')]
 
 class DeferredItemJob(QObject):
-    jobDone = pyqtSignal()
+    jobDone = PyQt4.QtCore.pyqtSignal()
 
     class Status:
         kFailed = -1
