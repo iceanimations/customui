@@ -59,7 +59,8 @@ class BaseExplorer(Form3, Base3):
                 text = self.projectsBox.itemText(i)
                 if text == project_name:
                     self.projectsBox.setCurrentIndex(i)
-                    break
+                    return
+            self.projectsBox.setCurrentIndex(0)
     
     def updateWindow(self):
         pass
